@@ -122,12 +122,12 @@ double BeamCKYParser::parse(string& seq) {
     }
 
 #ifdef SPECIAL_HP
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
     v_init_tetra_hex_tri(seq, seq_length, if_tetraloops, if_hexaloops, if_triloops);
 #endif
 #endif
 
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
         if(seq_length > 0) bestC[0].alpha = 0.0;
         if(seq_length > 1) bestC[1].alpha = 0.0;
 #else
@@ -158,7 +158,7 @@ double BeamCKYParser::parse(string& seq) {
                 if (jnext != -1) {
                     int nucjnext = nucs[jnext];
                     int nucjnext_1 = (jnext - 1) > -1 ? nucs[jnext - 1] : -1;
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         int tetra_hex_tri = -1;
 #ifdef SPECIAL_HP
                         if (jnext-j-1 == 4) // 6:tetra
@@ -193,7 +193,7 @@ double BeamCKYParser::parse(string& seq) {
                         int nucjnext_1 = (jnext - 1) > -1 ? nucs[jnext - 1] : -1;
 
                         // 1. extend h(i, j) to h(i, jnext)=
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         int tetra_hex_tri = -1;
 #ifdef SPECIAL_HP
                         if (jnext-i-1 == 4) // 6:tetra
@@ -233,7 +233,7 @@ double BeamCKYParser::parse(string& seq) {
                 // 1. extend (i, j) to (i, jnext)
                 {
                     if (jnext != -1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         Fast_LogPlusEquals(bestMulti[jnext][i].alpha, state.alpha);
 #else
                         newscore = score_multi_unpaired(j, jnext - 1);
@@ -244,7 +244,7 @@ double BeamCKYParser::parse(string& seq) {
 
                 // 2. generate P (i, j)
                 {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
 		  newscore = - v_score_multi(i, j, nuci, nuci1, nucs[j-1], nucj, seq_length, dangle_mode);
                     Fast_LogPlusEquals(beamstepP[i].alpha, state.alpha + newscore/kT);
 #else
@@ -273,7 +273,7 @@ double BeamCKYParser::parse(string& seq) {
                 // 1. generate new helix / single_branch
                 // new state is of shape p..i..j..q
                 if (i >0 && j<seq_length-1) {
-#ifndef lpv
+#ifndef LINEARPARTITION_VIENNA
                     value_type precomputed = score_junction_B(j, i, nucj, nucj1, nuci_1, nuci);
 #endif
                     for (int p = i - 1; p >= std::max(i - SINGLE_MAX_LEN, 0); --p) {
@@ -286,7 +286,7 @@ double BeamCKYParser::parse(string& seq) {
 
                             if (p == i - 1 && q == j + 1) {
                                 // helix
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                                 newscore = -v_score_single(p,q,i,j, nucp, nucp1, nucq_1, nucq,
                                                              nuci_1, nuci, nucj, nucj1);
 
@@ -300,7 +300,7 @@ double BeamCKYParser::parse(string& seq) {
 #endif
                             } else {
                                 // single branch
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                                 newscore = - v_score_single(p,q,i,j, nucp, nucp1, nucq_1, nucq,
                                                    nuci_1, nuci, nucj, nucj1);
                                 Fast_LogPlusEquals(bestP[q][p].alpha, state.alpha + newscore/kT);
@@ -319,7 +319,7 @@ double BeamCKYParser::parse(string& seq) {
 
                 // 2. M = P
                 if(i > 0 && j < seq_length-1){
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
 		  newscore = - v_score_M1(i, j, j, nuci_1, nuci, nucj, nucj1, seq_length, dangle_mode);
                         Fast_LogPlusEquals(beamstepM[i].alpha, state.alpha + newscore/kT);
 #else
@@ -331,7 +331,7 @@ double BeamCKYParser::parse(string& seq) {
                 // 3. M2 = M + P
                 int k = i - 1;
                 if ( k > 0 && !bestM[k].empty()) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
 		  newscore = - v_score_M1(i, j, j, nuci_1, nuci, nucj, nucj1, seq_length, dangle_mode);
                     pf_type m1_alpha = state.alpha + newscore/kT;
 #else
@@ -352,7 +352,7 @@ double BeamCKYParser::parse(string& seq) {
                         State& prefix_C = bestC[k];
                         int nuck = nuci_1;
                         int nuck1 = nuci;
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         newscore = - v_score_external_paired(k+1, j, nuck, nuck1,
                                                              nucj, nucj1, seq_length, dangle_mode);
                         Fast_LogPlusEquals(beamstepC.alpha, prefix_C.alpha + state.alpha + newscore/kT);      
@@ -362,7 +362,7 @@ double BeamCKYParser::parse(string& seq) {
                         Fast_LogPlusEquals(beamstepC.alpha, prefix_C.alpha + state.alpha + newscore);
 #endif
                     } else {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         newscore = - v_score_external_paired(0, j, -1, nucs[0],
 							     nucj, nucj1, seq_length, dangle_mode);
                         Fast_LogPlusEquals(beamstepC.alpha, state.alpha + newscore/kT);       
@@ -389,7 +389,7 @@ double BeamCKYParser::parse(string& seq) {
                     int nucp = nucs[p];
                     int q = next_pair[nucp][j];
                     if (q != -1 && ((i - p - 1) <= SINGLE_MAX_LEN)) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                     Fast_LogPlusEquals(bestMulti[q][p].alpha, state.alpha);      
 
 #else
@@ -413,7 +413,7 @@ double BeamCKYParser::parse(string& seq) {
                 int i = item.first;
                 State& state = item.second;
                 if (j < seq_length-1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                     Fast_LogPlusEquals(bestM[j+1][i].alpha, state.alpha); 
 #else
                     newscore = score_multi_unpaired(j + 1, j + 1);
@@ -427,7 +427,7 @@ double BeamCKYParser::parse(string& seq) {
         {
             // C = C + U
             if (j < seq_length-1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                 Fast_LogPlusEquals(bestC[j+1].alpha, beamstepC.alpha); 
                     
 #else
@@ -444,7 +444,7 @@ double BeamCKYParser::parse(string& seq) {
     double parse_elapsed_time = parse_endtime.tv_sec - parse_starttime.tv_sec + (parse_endtime.tv_usec-parse_starttime.tv_usec)/1000000.0;
 
     double ensemble; 
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
     ensemble = -kT * viterbi.alpha / 100.0; // -kT log(Q(x))
     fprintf(stderr,"Free Energy of Ensemble: %.5f kcal/mol\n", ensemble);
 #else
@@ -538,7 +538,7 @@ BeamCKYParser::BeamCKYParser(int beam_size,
       threshknot_file_index(ThreshKnot_file_index),
       is_fasta(fasta),
       dangle_mode(dangles) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
         initialize();
 #else
         initialize();

@@ -303,7 +303,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
         {
             // C = C + U
             if (j < seq_length-1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
             Fast_LogPlusEquals(beamstepC.beta, (bestC[j+1].beta));
                     
 #else
@@ -319,7 +319,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                 int i = item.first;
                 State& state = item.second;
                 if (j < seq_length-1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                     Fast_LogPlusEquals(state.beta, bestM[j+1][i].beta);
 #else
                     newscore = score_multi_unpaired(j + 1, j + 1);
@@ -341,7 +341,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                         int nucp = nucs[p];
                         int q = next_pair[nucp][j];
                         if (q != -1 && ((i - p - 1) <= SINGLE_MAX_LEN)) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                             Fast_LogPlusEquals(state.beta, bestMulti[q][p].beta);
 #else
                             newscore = score_multi_unpaired(p+1, i-1) +
@@ -366,7 +366,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                 int nuci_1 = (i-1>-1) ? nucs[i-1] : -1;
 
                 if (i >0 && j<seq_length-1) {
-#ifndef lpv
+#ifndef LINEARPARTITION_VIENNA
                     value_type precomputed = score_junction_B(j, i, nucj, nucj1, nuci_1, nuci);
 #endif
                     for (int p = i - 1; p >= std::max(i - SINGLE_MAX_LEN, 0); --p) {
@@ -379,7 +379,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
 
                             if (p == i - 1 && q == j + 1) {
                                 // helix
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                                 newscore = -v_score_single(p,q,i,j, nucp, nucp1, nucq_1, nucq,
                                                              nuci_1, nuci, nucj, nucj1);
                                 // SHAPE for Vienna only
@@ -396,7 +396,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
 #endif
                             } else {
                                 // single branch
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                                 newscore = - v_score_single(p,q,i,j, nucp, nucp1, nucq_1, nucq,
                                                    nuci_1, nuci, nucj, nucj1);
                                 Fast_LogPlusEquals(state.beta, bestP[q][p].beta + newscore/kT);
@@ -414,7 +414,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
 
                 // 2. M = P
                 if(i > 0 && j < seq_length-1){
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         newscore = - v_score_M1(i, j, j, nuci_1, nuci, nucj, nucj1, seq_length, dangle_mode);
                         Fast_LogPlusEquals(state.beta, beamstepM[i].beta + newscore/kT);
 #else
@@ -426,7 +426,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                 // 3. M2 = M + P
                 int k = i - 1;
                 if ( k > 0 && !bestM[k].empty()) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                     newscore = - v_score_M1(i, j, j, nuci_1, nuci, nucj, nucj1, seq_length, dangle_mode);
                     pf_type m1_alpha = newscore/kT;
 #else
@@ -448,7 +448,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                     if (k >= 0) {
                         int nuck = nuci_1;
                         int nuck1 = nuci;
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         newscore = - v_score_external_paired(k+1, j, nuck, nuck1,
                                                                  nucj, nucj1, seq_length, dangle_mode);
                         pf_type external_paired_alpha_plus_beamstepC_beta = beamstepC.beta + newscore/kT;
@@ -461,7 +461,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                         Fast_LogPlusEquals(state.beta, bestC[k].alpha + external_paired_alpha_plus_beamstepC_beta);
                     } else {
                         // value_type newscore;
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         newscore = - v_score_external_paired(0, j, -1, nucs[0],
                                                                  nucj, nucj1, seq_length, dangle_mode);
                         Fast_LogPlusEquals(state.beta, (beamstepC.beta + newscore/kT));
@@ -488,7 +488,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
                 // 1. extend (i, j) to (i, jnext)
                 {
                     if (jnext != -1) {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                         Fast_LogPlusEquals(state.beta, (bestMulti[jnext][i].beta));
 #else
                         newscore = score_multi_unpaired(j, jnext - 1);
@@ -499,7 +499,7 @@ void BeamCKYParser::outside(vector<int> next_pair[]){
 
                 // 2. generate P (i, j)
                 {
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
                     newscore = - v_score_multi(i, j, nuci, nuci1, nucs[j-1], nucj, seq_length, dangle_mode);
                     Fast_LogPlusEquals(state.beta, beamstepP[i].beta + newscore/kT);
 #else

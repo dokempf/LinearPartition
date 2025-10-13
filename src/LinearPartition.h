@@ -24,14 +24,14 @@
 
 using namespace std;
 
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
   typedef float pf_type;
 #else
   typedef double pf_type;
 #endif
 
 
-#ifdef lpv
+#ifdef LINEARPARTITION_VIENNA
   typedef int value_type;
   #define VALUE_MIN numeric_limits<double>::lowest()
 #else

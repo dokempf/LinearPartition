@@ -14,7 +14,7 @@ objects=bin/linearpartition_v bin/linearpartition_c
 linearpartition: src/LinearPartition.cpp $(DEPS) 
 		chmod +x linearpartition draw_bpp_plot draw_heatmap
 		mkdir -p bin
-		$(CC) src/LinearPartition.cpp $(CFLAGS) -Dlpv -o bin/linearpartition_v 
+		$(CC) src/LinearPartition.cpp $(CFLAGS) -DLINEARPARTITION_VIENNA -o bin/linearpartition_v 
 		$(CC) src/LinearPartition.cpp $(CFLAGS) -o bin/linearpartition_c
 
 clean:
