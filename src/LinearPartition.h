@@ -91,6 +91,7 @@ public:
     float threshknot_threshold;
     string threshknot_file_index;
     bool is_fasta;
+    string exported_structure;
   int dangle_mode;
 
     // SHAPE
@@ -157,8 +158,10 @@ private:
 
     vector<pair<pf_type, int>> scores;
 
+    public:
     unordered_map<pair<int,int>, pf_type, hash_pair> Pij;
 
+    private:
     void output_to_file(string file_name, const char * type);
     void output_to_file_MEA_threshknot_bpseq(string file_name, const char * type, map<int,int> & pairs, string & seq);
 

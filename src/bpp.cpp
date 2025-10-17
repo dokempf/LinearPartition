@@ -254,6 +254,7 @@ void BeamCKYParser::PairProb_MEA(string & seq) {
     }
 
     auto structure = back_trace(0,seq_length-1, back_pointer);
+    exported_structure = structure;
 
     if (!bpseq){
         if(!mea_file_index.empty()) {
