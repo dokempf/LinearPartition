@@ -267,10 +267,10 @@ void BeamCKYParser::PairProb_MEA(string & seq) {
             fprintf(fptr, "%s\n\n", structure.c_str());
         }
 
-        else{
-            printf("%s\n", seq.c_str());
-            printf("%s\n\n", structure.c_str());
-        }
+        // else{
+        //     printf("%s\n", seq.c_str());
+        //     printf("%s\n\n", structure.c_str());
+        // }
     }
 
     else{
