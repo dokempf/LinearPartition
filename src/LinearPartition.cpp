@@ -446,10 +446,10 @@ double BeamCKYParser::parse(string& seq) {
     double ensemble; 
 #ifdef LINEARPARTITION_VIENNA
     ensemble = -kT * viterbi.alpha / 100.0; // -kT log(Q(x))
-    fprintf(stderr,"Free Energy of Ensemble: %.5f kcal/mol\n", ensemble);
+    if(is_verbose) fprintf(stderr,"Free Energy of Ensemble: %.5f kcal/mol\n", ensemble);
 #else
     ensemble = viterbi.alpha;
-    fprintf(stderr,"Log Partition Coefficient: %.5f\n", ensemble);
+    if(is_verbose) fprintf(stderr,"Log Partition Coefficient: %.5f\n", ensemble);
 #endif
 
     if(is_verbose) fprintf(stderr,"Partition Function Calculation Time: %.2f seconds.\n", parse_elapsed_time);
